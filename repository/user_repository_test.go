@@ -62,7 +62,7 @@ func TestUserRepositoryCreate(t *testing.T) {
 		email := testutil.RandomEmail()
 		name := testutil.RandomString(10)
 
-		repos.User.Create(
+		_, _ = repos.User.Create(
 			email, name,
 		)
 
