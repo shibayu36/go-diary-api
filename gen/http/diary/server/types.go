@@ -3,12 +3,12 @@
 // diary HTTP server types
 //
 // Command:
-// $ goa gen github.com/shibayu36/go-playground/diary/design
+// $ goa gen github.com/shibayu36/go-diary-api/design
 
 package server
 
 import (
-	diary "github.com/shibayu36/go-playground/diary/gen/diary"
+	diary "github.com/shibayu36/go-diary-api/gen/diary"
 	goa "goa.design/goa/v3/pkg"
 )
 

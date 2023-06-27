@@ -3,7 +3,7 @@
 // diary client HTTP transport
 //
 // Command:
-// $ goa gen github.com/shibayu36/go-playground/diary/design
+// $ goa gen github.com/shibayu36/go-diary-api/design
 
 package client
 

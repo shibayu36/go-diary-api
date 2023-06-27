@@ -3,7 +3,7 @@
 // diary HTTP client CLI support package
 //
 // Command:
-// $ goa gen github.com/shibayu36/go-playground/diary/design
+// $ goa gen github.com/shibayu36/go-diary-api/design
 
 package client
 
@@ -11,7 +11,7 @@ import (
 	"encoding/json"
 	"fmt"
 
-	diary "github.com/shibayu36/go-playground/diary/gen/diary"
+	diary "github.com/shibayu36/go-diary-api/gen/diary"
 )
 
 // BuildUserSignupPayload builds the payload for the diary UserSignup endpoint

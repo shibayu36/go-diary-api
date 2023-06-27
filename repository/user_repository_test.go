@@ -5,9 +5,9 @@ import (
 	"testing"
 
 	"github.com/Songmu/flextime"
-	"github.com/shibayu36/go-playground/diary/config"
-	"github.com/shibayu36/go-playground/diary/model"
-	"github.com/shibayu36/go-playground/diary/testutil"
+	"github.com/shibayu36/go-diary-api/config"
+	"github.com/shibayu36/go-diary-api/model"
+	"github.com/shibayu36/go-diary-api/testutil"
 	"github.com/stretchr/testify/assert"
 )
 

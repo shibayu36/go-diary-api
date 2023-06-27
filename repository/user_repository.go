@@ -4,7 +4,7 @@ import (
 	"github.com/Songmu/flextime"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
-	"github.com/shibayu36/go-playground/diary/model"
+	"github.com/shibayu36/go-diary-api/model"
 )
 
 type UserRepository struct {

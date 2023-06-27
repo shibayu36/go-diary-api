@@ -3,12 +3,12 @@
 // diary HTTP client types
 //
 // Command:
-// $ goa gen github.com/shibayu36/go-playground/diary/design
+// $ goa gen github.com/shibayu36/go-diary-api/design
 
 package client
 
 import (
-	diary "github.com/shibayu36/go-playground/diary/gen/diary"
+	diary "github.com/shibayu36/go-diary-api/gen/diary"
 )
 
 // UserSignupRequestBody is the type of the "diary" service "UserSignup"

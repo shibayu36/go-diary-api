@@ -5,9 +5,9 @@ import (
 	"errors"
 	"log"
 
-	diary "github.com/shibayu36/go-playground/diary/gen/diary"
-	"github.com/shibayu36/go-playground/diary/model"
-	"github.com/shibayu36/go-playground/diary/repository"
+	diary "github.com/shibayu36/go-diary-api/gen/diary"
+	"github.com/shibayu36/go-diary-api/model"
+	"github.com/shibayu36/go-diary-api/repository"
 )
 
 // diary service example implementation.

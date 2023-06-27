@@ -3,7 +3,7 @@ package repository
 import (
 	"testing"
 
-	"github.com/shibayu36/go-playground/diary/config"
+	"github.com/shibayu36/go-diary-api/config"
 	"github.com/stretchr/testify/assert"
 )
 

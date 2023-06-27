@@ -3,7 +3,7 @@
 // diary HTTP client encoders and decoders
 //
 // Command:
-// $ goa gen github.com/shibayu36/go-playground/diary/design
+// $ goa gen github.com/shibayu36/go-diary-api/design
 
 package client
 
@@ -14,7 +14,7 @@ import (
 	"net/http"
 	"net/url"
 
-	diary "github.com/shibayu36/go-playground/diary/gen/diary"
+	diary "github.com/shibayu36/go-diary-api/gen/diary"
 	goahttp "goa.design/goa/v3/http"
 )
 

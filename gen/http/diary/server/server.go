@@ -3,7 +3,7 @@
 // diary HTTP server
 //
 // Command:
-// $ goa gen github.com/shibayu36/go-playground/diary/design
+// $ goa gen github.com/shibayu36/go-diary-api/design
 
 package server
 
@@ -11,7 +11,7 @@ import (
 	"context"
 	"net/http"
 
-	diary "github.com/shibayu36/go-playground/diary/gen/diary"
+	diary "github.com/shibayu36/go-diary-api/gen/diary"
 	goahttp "goa.design/goa/v3/http"
 	goa "goa.design/goa/v3/pkg"
 )

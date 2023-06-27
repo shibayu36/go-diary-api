@@ -4,7 +4,7 @@ package service
 // 	"context"
 // 	"log"
 
-// 	calc "github.com/shibayu36/go-playground/diary/gen/calc"
+// 	calc "github.com/shibayu36/go-diary-api/gen/calc"
 // )
 
 // // calc service example implementation.

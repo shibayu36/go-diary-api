@@ -9,8 +9,8 @@ import (
 	"sync"
 	"time"
 
-	diary "github.com/shibayu36/go-playground/diary/gen/diary"
-	diarysvr "github.com/shibayu36/go-playground/diary/gen/http/diary/server"
+	diary "github.com/shibayu36/go-diary-api/gen/diary"
+	diarysvr "github.com/shibayu36/go-diary-api/gen/http/diary/server"
 	goahttp "goa.design/goa/v3/http"
 	httpmdlwr "goa.design/goa/v3/http/middleware"
 	"goa.design/goa/v3/middleware"

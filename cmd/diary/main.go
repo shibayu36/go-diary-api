@@ -12,10 +12,10 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/shibayu36/go-playground/diary/config"
-	diary "github.com/shibayu36/go-playground/diary/gen/diary"
-	"github.com/shibayu36/go-playground/diary/repository"
-	service "github.com/shibayu36/go-playground/diary/service"
+	"github.com/shibayu36/go-diary-api/config"
+	diary "github.com/shibayu36/go-diary-api/gen/diary"
+	"github.com/shibayu36/go-diary-api/repository"
+	service "github.com/shibayu36/go-diary-api/service"
 )
 
 func main() {

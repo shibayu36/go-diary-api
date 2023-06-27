@@ -3,7 +3,7 @@
 // diary HTTP client CLI support package
 //
 // Command:
-// $ goa gen github.com/shibayu36/go-playground/diary/design
+// $ goa gen github.com/shibayu36/go-diary-api/design
 
 package cli
 
@@ -13,7 +13,7 @@ import (
 	"net/http"
 	"os"
 
-	diaryc "github.com/shibayu36/go-playground/diary/gen/http/diary/client"
+	diaryc "github.com/shibayu36/go-diary-api/gen/http/diary/client"
 	goahttp "goa.design/goa/v3/http"
 	goa "goa.design/goa/v3/pkg"
 )
