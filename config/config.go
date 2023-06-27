@@ -3,6 +3,8 @@ package config
 import (
 	"fmt"
 	"os"
+
+	"github.com/go-sql-driver/mysql"
 )
 
 type Config struct {
@@ -12,11 +14,15 @@ type Config struct {
 func Load() (*Config, error) {
 	config := &Config{}
 
-	dbDsn := os.Getenv("DATABASE_DSN")
-	if dbDsn == "" {
-		return nil, fmt.Errorf("Specify DATABASE_DSN")
+	mConf := mysql.Config{
+		User:      os.Getenv("DB_USER"),
+		Passwd:    os.Getenv("DB_PASSWORD"),
+		Net:       "tcp",
+		Addr:      fmt.Sprintf("%s:%s", os.Getenv("DB_HOST"), os.Getenv("DB_PORT")),
+		DBName:    os.Getenv("DB_NAME"),
+		ParseTime: true,
 	}
-	config.DbDsn = dbDsn
+	config.DbDsn = mConf.FormatDSN()
 
 	return config, nil
 }
