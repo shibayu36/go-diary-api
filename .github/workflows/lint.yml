@@ -11,10 +11,11 @@ jobs:
     name: golangci-lint
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
       - uses: actions/setup-go@v4
         with:
-          go-version: 'stable'
-      - uses: actions/checkout@v3
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
         with:

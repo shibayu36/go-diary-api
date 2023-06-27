@@ -23,10 +23,11 @@ jobs:
           - 3306:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
+      - uses: actions/checkout@v3
       - uses: actions/setup-go@v4
         with:
-          go-version: 'stable'
-      - uses: actions/checkout@v3
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
       - name: migrate
         run: ./scripts/migrate.sh
       - name: go test
