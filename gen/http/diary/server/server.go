@@ -20,6 +20,7 @@ import (
 type Server struct {
 	Mounts     []*MountPoint
 	UserSignup http.Handler
+	Signin     http.Handler
 }
 
 // MountPoint holds information about the mounted endpoints.
@@ -50,8 +51,10 @@ func New(
 	return &Server{
 		Mounts: []*MountPoint{
 			{"UserSignup", "POST", "/signup"},
+			{"Signin", "POST", "/signin"},
 		},
 		UserSignup: NewUserSignupHandler(e.UserSignup, mux, decoder, encoder, errhandler, formatter),
+		Signin:     NewSigninHandler(e.Signin, mux, decoder, encoder, errhandler, formatter),
 	}
 }
 
@@ -61,6 +64,7 @@ func (s *Server) Service() string { return "diary" }
 // Use wraps the server handlers with the given middleware.
 func (s *Server) Use(m func(http.Handler) http.Handler) {
 	s.UserSignup = m(s.UserSignup)
+	s.Signin = m(s.Signin)
 }
 
 // MethodNames returns the methods served.
@@ -69,6 +73,7 @@ func (s *Server) MethodNames() []string { return diary.MethodNames[:] }
 // Mount configures the mux to serve the diary endpoints.
 func Mount(mux goahttp.Muxer, h *Server) {
 	MountUserSignupHandler(mux, h.UserSignup)
+	MountSigninHandler(mux, h.Signin)
 }
 
 // Mount configures the mux to serve the diary endpoints.
@@ -106,6 +111,57 @@ func NewUserSignupHandler(
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := context.WithValue(r.Context(), goahttp.AcceptTypeKey, r.Header.Get("Accept"))
 		ctx = context.WithValue(ctx, goa.MethodKey, "UserSignup")
+		ctx = context.WithValue(ctx, goa.ServiceKey, "diary")
+		payload, err := decodeRequest(r)
+		if err != nil {
+			if err := encodeError(ctx, w, err); err != nil {
+				errhandler(ctx, w, err)
+			}
+			return
+		}
+		res, err := endpoint(ctx, payload)
+		if err != nil {
+			if err := encodeError(ctx, w, err); err != nil {
+				errhandler(ctx, w, err)
+			}
+			return
+		}
+		if err := encodeResponse(ctx, w, res); err != nil {
+			errhandler(ctx, w, err)
+		}
+	})
+}
+
+// MountSigninHandler configures the mux to serve the "diary" service "Signin"
+// endpoint.
+func MountSigninHandler(mux goahttp.Muxer, h http.Handler) {
+	f, ok := h.(http.HandlerFunc)
+	if !ok {
+		f = func(w http.ResponseWriter, r *http.Request) {
+			h.ServeHTTP(w, r)
+		}
+	}
+	mux.Handle("POST", "/signin", f)
+}
+
+// NewSigninHandler creates a HTTP handler which loads the HTTP request and
+// calls the "diary" service "Signin" endpoint.
+func NewSigninHandler(
+	endpoint goa.Endpoint,
+	mux goahttp.Muxer,
+	decoder func(*http.Request) goahttp.Decoder,
+	encoder func(context.Context, http.ResponseWriter) goahttp.Encoder,
+	errhandler func(context.Context, http.ResponseWriter, error),
+	formatter func(ctx context.Context, err error) goahttp.Statuser,
+) http.Handler {
+	var (
+		decodeRequest  = DecodeSigninRequest(mux, decoder)
+		encodeResponse = EncodeSigninResponse(encoder)
+		encodeError    = goahttp.ErrorEncoder(encoder, formatter)
+	)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := context.WithValue(r.Context(), goahttp.AcceptTypeKey, r.Header.Get("Accept"))
+		ctx = context.WithValue(ctx, goa.MethodKey, "Signin")
 		ctx = context.WithValue(ctx, goa.ServiceKey, "diary")
 		payload, err := decodeRequest(r)
 		if err != nil {

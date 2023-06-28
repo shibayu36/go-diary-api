@@ -16,21 +16,39 @@ import (
 // Client is the "diary" service client.
 type Client struct {
 	UserSignupEndpoint goa.Endpoint
+	SigninEndpoint     goa.Endpoint
 }
 
 // NewClient initializes a "diary" service client given the endpoints.
-func NewClient(userSignup goa.Endpoint) *Client {
+func NewClient(userSignup, signin goa.Endpoint) *Client {
 	return &Client{
 		UserSignupEndpoint: userSignup,
+		SigninEndpoint:     signin,
 	}
 }
 
 // UserSignup calls the "UserSignup" endpoint of the "diary" service.
 // UserSignup may return the following errors:
+//   - "unauthorized" (type Unauthorized)
 //   - "user_validation_error" (type *goa.ServiceError)
 //   - "user_duplication_error" (type *goa.ServiceError)
 //   - error: internal error
 func (c *Client) UserSignup(ctx context.Context, p *UserSignupPayload) (err error) {
 	_, err = c.UserSignupEndpoint(ctx, p)
 	return
+}
+
+// Signin calls the "Signin" endpoint of the "diary" service.
+// Signin may return the following errors:
+//   - "unauthorized" (type Unauthorized)
+//   - "user_validation_error" (type *goa.ServiceError)
+//   - "user_duplication_error" (type *goa.ServiceError)
+//   - error: internal error
+func (c *Client) Signin(ctx context.Context, p *SigninPayload) (res string, err error) {
+	var ires any
+	ires, err = c.SigninEndpoint(ctx, p)
+	if err != nil {
+		return
+	}
+	return ires.(string), nil
 }

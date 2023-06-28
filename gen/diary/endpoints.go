@@ -16,18 +16,21 @@ import (
 // Endpoints wraps the "diary" service endpoints.
 type Endpoints struct {
 	UserSignup goa.Endpoint
+	Signin     goa.Endpoint
 }
 
 // NewEndpoints wraps the methods of the "diary" service with endpoints.
 func NewEndpoints(s Service) *Endpoints {
 	return &Endpoints{
 		UserSignup: NewUserSignupEndpoint(s),
+		Signin:     NewSigninEndpoint(s),
 	}
 }
 
 // Use applies the given middleware to all the "diary" service endpoints.
 func (e *Endpoints) Use(m func(goa.Endpoint) goa.Endpoint) {
 	e.UserSignup = m(e.UserSignup)
+	e.Signin = m(e.Signin)
 }
 
 // NewUserSignupEndpoint returns an endpoint function that calls the method
@@ -36,5 +39,14 @@ func NewUserSignupEndpoint(s Service) goa.Endpoint {
 	return func(ctx context.Context, req any) (any, error) {
 		p := req.(*UserSignupPayload)
 		return nil, s.UserSignup(ctx, p)
+	}
+}
+
+// NewSigninEndpoint returns an endpoint function that calls the method
+// "Signin" of service "diary".
+func NewSigninEndpoint(s Service) goa.Endpoint {
+	return func(ctx context.Context, req any) (any, error) {
+		p := req.(*SigninPayload)
+		return s.Signin(ctx, p)
 	}
 }

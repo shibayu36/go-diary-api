@@ -17,6 +17,8 @@ import (
 type Service interface {
 	// UserSignup implements UserSignup.
 	UserSignup(context.Context, *UserSignupPayload) (err error)
+	// Creates a valid API token
+	Signin(context.Context, *SigninPayload) (res string, err error)
 }
 
 // ServiceName is the name of the service as defined in the design. This is the
@@ -27,7 +29,13 @@ const ServiceName = "diary"
 // MethodNames lists the service method names as defined in the design. These
 // are the same values that are set in the endpoint request contexts under the
 // MethodKey key.
-var MethodNames = [1]string{"UserSignup"}
+var MethodNames = [2]string{"UserSignup", "Signin"}
+
+// SigninPayload is the payload type of the diary service Signin method.
+type SigninPayload struct {
+	// User email
+	Email string
+}
 
 // UserSignupPayload is the payload type of the diary service UserSignup method.
 type UserSignupPayload struct {
@@ -35,6 +43,26 @@ type UserSignupPayload struct {
 	Name string
 	// User email
 	Email string
+}
+
+// Credentials are invalid
+type Unauthorized string
+
+// Error returns an error description.
+func (e Unauthorized) Error() string {
+	return "Credentials are invalid"
+}
+
+// ErrorName returns "unauthorized".
+//
+// Deprecated: Use GoaErrorName - https://github.com/goadesign/goa/issues/3105
+func (e Unauthorized) ErrorName() string {
+	return e.GoaErrorName()
+}
+
+// GoaErrorName returns "unauthorized".
+func (e Unauthorized) GoaErrorName() string {
+	return "unauthorized"
 }
 
 // MakeUserValidationError builds a goa.ServiceError from an error.

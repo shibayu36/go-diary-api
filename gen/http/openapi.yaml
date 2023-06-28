@@ -13,6 +13,28 @@ produces:
     - application/xml
     - application/gob
 paths:
+    /signin:
+        post:
+            tags:
+                - diary
+            summary: Signin diary
+            description: Creates a valid API token
+            operationId: diary#Signin
+            parameters:
+                - name: SigninRequestBody
+                  in: body
+                  required: true
+                  schema:
+                    $ref: '#/definitions/DiarySigninRequestBody'
+                    required:
+                        - email
+            responses:
+                "200":
+                    description: OK response.
+                    schema:
+                        type: string
+            schemes:
+                - http
     /signup:
         post:
             tags:
@@ -34,6 +56,18 @@ paths:
             schemes:
                 - http
 definitions:
+    DiarySigninRequestBody:
+        title: DiarySigninRequestBody
+        type: object
+        properties:
+            email:
+                type: string
+                description: User email
+                example: Facilis cum laudantium sit rerum.
+        example:
+            email: Rem explicabo quo harum molestias facere.
+        required:
+            - email
     DiaryUserSignupRequestBody:
         title: DiaryUserSignupRequestBody
         type: object
@@ -41,14 +75,14 @@ definitions:
             email:
                 type: string
                 description: User email
-                example: Consequatur quis aperiam assumenda.
+                example: Quia deleniti numquam vitae quaerat illo.
             name:
                 type: string
                 description: User name
-                example: Eius voluptatem necessitatibus.
+                example: Qui id hic vel est.
         example:
-            email: Corrupti necessitatibus iure.
-            name: Dicta dolores itaque accusamus ducimus distinctio ab.
+            email: Voluptatibus eligendi et eligendi occaecati.
+            name: Occaecati laboriosam molestiae necessitatibus nobis velit.
         required:
             - name
             - email

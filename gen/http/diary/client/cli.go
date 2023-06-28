@@ -22,11 +22,29 @@ func BuildUserSignupPayload(diaryUserSignupBody string) (*diary.UserSignupPayloa
 	{
 		err = json.Unmarshal([]byte(diaryUserSignupBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"email\": \"Laudantium repellendus.\",\n      \"name\": \"Aliquid doloribus.\"\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"email\": \"Consequatur quis aperiam assumenda.\",\n      \"name\": \"Eius voluptatem necessitatibus.\"\n   }'")
 		}
 	}
 	v := &diary.UserSignupPayload{
 		Name:  body.Name,
+		Email: body.Email,
+	}
+
+	return v, nil
+}
+
+// BuildSigninPayload builds the payload for the diary Signin endpoint from CLI
+// flags.
+func BuildSigninPayload(diarySigninBody string) (*diary.SigninPayload, error) {
+	var err error
+	var body SigninRequestBody
+	{
+		err = json.Unmarshal([]byte(diarySigninBody), &body)
+		if err != nil {
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"email\": \"Dicta dolores itaque accusamus ducimus distinctio ab.\"\n   }'")
+		}
+	}
+	v := &diary.SigninPayload{
 		Email: body.Email,
 	}
 

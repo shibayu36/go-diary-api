@@ -56,7 +56,13 @@ var _ = API("diary", func() {
 // 	})
 // })
 
+var APIKeyAuth = APIKeySecurity("api_key", func() {
+	Description("Secures endpoint by requiring an API key.")
+})
+
 var _ = Service("diary", func() {
+	Error("unauthorized", String, "Credentials are invalid")
+
 	Error("user_validation_error")
 	Error("user_duplication_error")
 
@@ -76,6 +82,24 @@ var _ = Service("diary", func() {
 		HTTP(func() {
 			POST("/signup")
 			Response(StatusCreated)
+		})
+	})
+
+	Method("Signin", func() {
+		Description("Creates a valid API token")
+
+		Payload(func() {
+			Attribute("email", String, func() {
+				Description("User email")
+			})
+			Required("email")
+		})
+
+		Result(String)
+
+		HTTP(func() {
+			POST("/signin")
+			Response(StatusOK)
 		})
 	})
 })

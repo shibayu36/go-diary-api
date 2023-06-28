@@ -40,3 +40,8 @@ func (s *diarysrvc) UserSignup(ctx context.Context, p *diary.UserSignupPayload) 
 
 	return
 }
+
+func (s *diarysrvc) Signin(ctx context.Context, p *diary.SigninPayload) (res string, err error) {
+	s.logger.Print("diary.Signin")
+	return
+}

@@ -75,3 +75,69 @@ func DecodeUserSignupResponse(decoder func(*http.Response) goahttp.Decoder, rest
 		}
 	}
 }
+
+// BuildSigninRequest instantiates a HTTP request object with method and path
+// set to call the "diary" service "Signin" endpoint
+func (c *Client) BuildSigninRequest(ctx context.Context, v any) (*http.Request, error) {
+	u := &url.URL{Scheme: c.scheme, Host: c.host, Path: SigninDiaryPath()}
+	req, err := http.NewRequest("POST", u.String(), nil)
+	if err != nil {
+		return nil, goahttp.ErrInvalidURL("diary", "Signin", u.String(), err)
+	}
+	if ctx != nil {
+		req = req.WithContext(ctx)
+	}
+
+	return req, nil
+}
+
+// EncodeSigninRequest returns an encoder for requests sent to the diary Signin
+// server.
+func EncodeSigninRequest(encoder func(*http.Request) goahttp.Encoder) func(*http.Request, any) error {
+	return func(req *http.Request, v any) error {
+		p, ok := v.(*diary.SigninPayload)
+		if !ok {
+			return goahttp.ErrInvalidType("diary", "Signin", "*diary.SigninPayload", v)
+		}
+		body := NewSigninRequestBody(p)
+		if err := encoder(req).Encode(&body); err != nil {
+			return goahttp.ErrEncodingError("diary", "Signin", err)
+		}
+		return nil
+	}
+}
+
+// DecodeSigninResponse returns a decoder for responses returned by the diary
+// Signin endpoint. restoreBody controls whether the response body should be
+// restored after having been read.
+func DecodeSigninResponse(decoder func(*http.Response) goahttp.Decoder, restoreBody bool) func(*http.Response) (any, error) {
+	return func(resp *http.Response) (any, error) {
+		if restoreBody {
+			b, err := io.ReadAll(resp.Body)
+			if err != nil {
+				return nil, err
+			}
+			resp.Body = io.NopCloser(bytes.NewBuffer(b))
+			defer func() {
+				resp.Body = io.NopCloser(bytes.NewBuffer(b))
+			}()
+		} else {
+			defer resp.Body.Close()
+		}
+		switch resp.StatusCode {
+		case http.StatusOK:
+			var (
+				body string
+				err  error
+			)
+			err = decoder(resp).Decode(&body)
+			if err != nil {
+				return nil, goahttp.ErrDecodingError("diary", "Signin", err)
+			}
+			return body, nil
+		default:
+			body, _ := io.ReadAll(resp.Body)
+			return nil, goahttp.ErrInvalidResponse("diary", "Signin", resp.StatusCode, string(body))
+		}
+	}
+}

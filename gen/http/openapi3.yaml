@@ -6,6 +6,30 @@ info:
 servers:
     - url: http://localhost:8000
 paths:
+    /signin:
+        post:
+            tags:
+                - diary
+            summary: Signin diary
+            description: Creates a valid API token
+            operationId: diary#Signin
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SigninRequestBody'
+                        example:
+                            email: Dicta dolores itaque accusamus ducimus distinctio ab.
+            responses:
+                "200":
+                    description: OK response.
+                    content:
+                        application/json:
+                            schema:
+                                type: string
+                                example: Similique sint cupiditate id et enim.
+                            example: Culpa pariatur in assumenda voluptatem rerum.
     /signup:
         post:
             tags:
@@ -19,8 +43,8 @@ paths:
                         schema:
                             $ref: '#/components/schemas/UserSignupRequestBody'
                         example:
-                            email: Laudantium repellendus.
-                            name: Aliquid doloribus.
+                            email: Consequatur quis aperiam assumenda.
+                            name: Eius voluptatem necessitatibus.
             responses:
                 "201":
                     description: Created response.
@@ -31,20 +55,31 @@ paths:
                                 format: binary
 components:
     schemas:
+        SigninRequestBody:
+            type: object
+            properties:
+                email:
+                    type: string
+                    description: User email
+                    example: Aut commodi dolorem eligendi dolor nemo provident.
+            example:
+                email: Tempore incidunt.
+            required:
+                - email
         UserSignupRequestBody:
             type: object
             properties:
                 email:
                     type: string
                     description: User email
-                    example: Qui id hic vel est.
+                    example: Modi est eos perspiciatis earum.
                 name:
                     type: string
                     description: User name
-                    example: Et repellendus ullam autem.
+                    example: Unde consequatur.
             example:
-                email: Occaecati laboriosam molestiae necessitatibus nobis velit.
-                name: Quia deleniti numquam vitae quaerat illo.
+                email: Voluptatem laudantium voluptatem est.
+                name: Impedit deserunt.
             required:
                 - name
                 - email

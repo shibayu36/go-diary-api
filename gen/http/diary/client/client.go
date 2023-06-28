@@ -21,6 +21,9 @@ type Client struct {
 	// endpoint.
 	UserSignupDoer goahttp.Doer
 
+	// Signin Doer is the HTTP client used to make requests to the Signin endpoint.
+	SigninDoer goahttp.Doer
+
 	// RestoreResponseBody controls whether the response bodies are reset after
 	// decoding so they can be read again.
 	RestoreResponseBody bool
@@ -42,6 +45,7 @@ func NewClient(
 ) *Client {
 	return &Client{
 		UserSignupDoer:      doer,
+		SigninDoer:          doer,
 		RestoreResponseBody: restoreBody,
 		scheme:              scheme,
 		host:                host,
@@ -69,6 +73,30 @@ func (c *Client) UserSignup() goa.Endpoint {
 		resp, err := c.UserSignupDoer.Do(req)
 		if err != nil {
 			return nil, goahttp.ErrRequestError("diary", "UserSignup", err)
+		}
+		return decodeResponse(resp)
+	}
+}
+
+// Signin returns an endpoint that makes HTTP requests to the diary service
+// Signin server.
+func (c *Client) Signin() goa.Endpoint {
+	var (
+		encodeRequest  = EncodeSigninRequest(c.encoder)
+		decodeResponse = DecodeSigninResponse(c.decoder, c.RestoreResponseBody)
+	)
+	return func(ctx context.Context, v any) (any, error) {
+		req, err := c.BuildSigninRequest(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+		err = encodeRequest(req, v)
+		if err != nil {
+			return nil, err
+		}
+		resp, err := c.SigninDoer.Do(req)
+		if err != nil {
+			return nil, goahttp.ErrRequestError("diary", "Signin", err)
 		}
 		return decodeResponse(resp)
 	}

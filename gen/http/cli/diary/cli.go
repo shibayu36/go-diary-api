@@ -22,15 +22,15 @@ import (
 //
 //	command (subcommand1|subcommand2|...)
 func UsageCommands() string {
-	return `diary user-signup
+	return `diary (user-signup|signin)
 `
 }
 
 // UsageExamples produces an example of a valid invocation of the CLI tool.
 func UsageExamples() string {
 	return os.Args[0] + ` diary user-signup --body '{
-      "email": "Laudantium repellendus.",
-      "name": "Aliquid doloribus."
+      "email": "Consequatur quis aperiam assumenda.",
+      "name": "Eius voluptatem necessitatibus."
    }'` + "\n" +
 		""
 }
@@ -49,9 +49,13 @@ func ParseEndpoint(
 
 		diaryUserSignupFlags    = flag.NewFlagSet("user-signup", flag.ExitOnError)
 		diaryUserSignupBodyFlag = diaryUserSignupFlags.String("body", "REQUIRED", "")
+
+		diarySigninFlags    = flag.NewFlagSet("signin", flag.ExitOnError)
+		diarySigninBodyFlag = diarySigninFlags.String("body", "REQUIRED", "")
 	)
 	diaryFlags.Usage = diaryUsage
 	diaryUserSignupFlags.Usage = diaryUserSignupUsage
+	diarySigninFlags.Usage = diarySigninUsage
 
 	if err := flag.CommandLine.Parse(os.Args[1:]); err != nil {
 		return nil, nil, err
@@ -90,6 +94,9 @@ func ParseEndpoint(
 			case "user-signup":
 				epf = diaryUserSignupFlags
 
+			case "signin":
+				epf = diarySigninFlags
+
 			}
 
 		}
@@ -118,6 +125,9 @@ func ParseEndpoint(
 			case "user-signup":
 				endpoint = c.UserSignup()
 				data, err = diaryc.BuildUserSignupPayload(*diaryUserSignupBodyFlag)
+			case "signin":
+				endpoint = c.Signin()
+				data, err = diaryc.BuildSigninPayload(*diarySigninBodyFlag)
 			}
 		}
 	}
@@ -136,6 +146,7 @@ Usage:
 
 COMMAND:
     user-signup: UserSignup implements UserSignup.
+    signin: Creates a valid API token
 
 Additional help:
     %[1]s diary COMMAND --help
@@ -149,8 +160,21 @@ UserSignup implements UserSignup.
 
 Example:
     %[1]s diary user-signup --body '{
-      "email": "Laudantium repellendus.",
-      "name": "Aliquid doloribus."
+      "email": "Consequatur quis aperiam assumenda.",
+      "name": "Eius voluptatem necessitatibus."
+   }'
+`, os.Args[0])
+}
+
+func diarySigninUsage() {
+	fmt.Fprintf(os.Stderr, `%[1]s [flags] diary signin -body JSON
+
+Creates a valid API token
+    -body JSON: 
+
+Example:
+    %[1]s diary signin --body '{
+      "email": "Dicta dolores itaque accusamus ducimus distinctio ab."
    }'
 `, os.Args[0])
 }

@@ -11,3 +11,8 @@ package server
 func UserSignupDiaryPath() string {
 	return "/signup"
 }
+
+// SigninDiaryPath returns the URL path to the diary service Signin HTTP endpoint.
+func SigninDiaryPath() string {
+	return "/signin"
+}

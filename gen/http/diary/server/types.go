@@ -21,10 +21,26 @@ type UserSignupRequestBody struct {
 	Email *string `form:"email,omitempty" json:"email,omitempty" xml:"email,omitempty"`
 }
 
+// SigninRequestBody is the type of the "diary" service "Signin" endpoint HTTP
+// request body.
+type SigninRequestBody struct {
+	// User email
+	Email *string `form:"email,omitempty" json:"email,omitempty" xml:"email,omitempty"`
+}
+
 // NewUserSignupPayload builds a diary service UserSignup endpoint payload.
 func NewUserSignupPayload(body *UserSignupRequestBody) *diary.UserSignupPayload {
 	v := &diary.UserSignupPayload{
 		Name:  *body.Name,
+		Email: *body.Email,
+	}
+
+	return v
+}
+
+// NewSigninPayload builds a diary service Signin endpoint payload.
+func NewSigninPayload(body *SigninRequestBody) *diary.SigninPayload {
+	v := &diary.SigninPayload{
 		Email: *body.Email,
 	}
 
@@ -37,6 +53,14 @@ func ValidateUserSignupRequestBody(body *UserSignupRequestBody) (err error) {
 	if body.Name == nil {
 		err = goa.MergeErrors(err, goa.MissingFieldError("name", "body"))
 	}
+	if body.Email == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("email", "body"))
+	}
+	return
+}
+
+// ValidateSigninRequestBody runs the validations defined on SigninRequestBody
+func ValidateSigninRequestBody(body *SigninRequestBody) (err error) {
 	if body.Email == nil {
 		err = goa.MergeErrors(err, goa.MissingFieldError("email", "body"))
 	}
