@@ -7,7 +7,8 @@ import (
 )
 
 type Repositories struct {
-	User *UserRepository
+	User   *UserRepository
+	ApiKey *ApiKeyRepository
 
 	db *sqlx.DB
 }
@@ -18,8 +19,9 @@ func NewRepositories(dsn string) (*Repositories, error) {
 		return nil, fmt.Errorf("Opening mysql failed: %v", err)
 	}
 	return &Repositories{
-		User: NewUserRepository(db),
-		db:   db,
+		User:   NewUserRepository(db),
+		ApiKey: NewApiKeyRepository(db),
+		db:     db,
 	}, nil
 }
 
