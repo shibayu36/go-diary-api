@@ -72,3 +72,23 @@ func TestUserRepositoryFindByID(t *testing.T) {
 	assert.Equal(t, user.Email, foundUser.Email)
 	assert.Equal(t, user.Name, foundUser.Name)
 }
+
+func TestUserRepositoryFindByEmail(t *testing.T) {
+	t.Run("user found", func(t *testing.T) {
+		email := testutil.RandomEmail()
+		name := testutil.RandomString(10)
+		user, _ := repos.User.Create(
+			email, name,
+		)
+
+		foundUser, err := repos.User.FindByEmail(email)
+		assert.Nil(t, err)
+		assert.Equal(t, user.Email, foundUser.Email)
+	})
+
+	t.Run("user not found", func(t *testing.T) {
+		foundUser, err := repos.User.FindByEmail(testutil.RandomEmail())
+		assert.Nil(t, foundUser)
+		assert.True(t, IsNotFound(err))
+	})
+}

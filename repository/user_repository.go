@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"database/sql"
+
 	"github.com/Songmu/flextime"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
@@ -49,6 +51,18 @@ func (r *UserRepository) FindByID(id int64) (*model.User, error) {
 	var user model.User
 	err := r.db.Get(&user, "SELECT * FROM users WHERE user_id = ?", id)
 	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (r *UserRepository) FindByEmail(email string) (*model.User, error) {
+	var user model.User
+	err := r.db.Get(&user, "SELECT * FROM users WHERE email = ?", email)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, NewNotFoundError("user")
+		}
 		return nil, err
 	}
 	return &user, nil
