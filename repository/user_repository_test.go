@@ -13,12 +13,6 @@ import (
 
 func TestUserRepositoryCreate(t *testing.T) {
 	t.Run("with valid parameters", func(t *testing.T) {
-		restore := flextime.Fix(flextime.Now())
-		defer restore()
-
-		c, _ := config.Load()
-		repos, _ := NewRepositories(c.DbDsn)
-
 		email := testutil.RandomEmail()
 		name := testutil.RandomString(10)
 
@@ -36,12 +30,6 @@ func TestUserRepositoryCreate(t *testing.T) {
 	})
 
 	t.Run("with invalid parameters", func(t *testing.T) {
-		restore := flextime.Fix(flextime.Now())
-		defer restore()
-
-		c, _ := config.Load()
-		repos, _ := NewRepositories(c.DbDsn)
-
 		email := "invalidemail"
 		name := testutil.RandomString(10)
 
@@ -53,12 +41,6 @@ func TestUserRepositoryCreate(t *testing.T) {
 	})
 
 	t.Run("with duplicated email", func(t *testing.T) {
-		restore := flextime.Fix(flextime.Now())
-		defer restore()
-
-		c, _ := config.Load()
-		repos, _ := NewRepositories(c.DbDsn)
-
 		email := testutil.RandomEmail()
 		name := testutil.RandomString(10)
 
