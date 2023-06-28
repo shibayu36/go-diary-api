@@ -2,10 +2,10 @@ package repository
 
 import (
 	"errors"
+	"math/rand"
 	"testing"
 
 	"github.com/Songmu/flextime"
-	"github.com/shibayu36/go-diary-api/config"
 	"github.com/shibayu36/go-diary-api/model"
 	"github.com/shibayu36/go-diary-api/testutil"
 	"github.com/stretchr/testify/assert"
@@ -58,19 +58,24 @@ func TestUserRepositoryCreate(t *testing.T) {
 }
 
 func TestUserRepositoryFindByID(t *testing.T) {
-	c, _ := config.Load()
-	repos, _ := NewRepositories(c.DbDsn)
+	t.Run("user found", func(t *testing.T) {
+		email := testutil.RandomEmail()
+		name := testutil.RandomString(10)
+		user, _ := repos.User.Create(
+			email, name,
+		)
 
-	email := testutil.RandomEmail()
-	name := testutil.RandomString(10)
-	user, _ := repos.User.Create(
-		email, name,
-	)
+		foundUser, err := repos.User.FindByID(user.UserID)
+		assert.Nil(t, err)
+		assert.Equal(t, user.Email, foundUser.Email)
+		assert.Equal(t, user.Name, foundUser.Name)
+	})
 
-	foundUser, err := repos.User.FindByID(user.UserID)
-	assert.Nil(t, err)
-	assert.Equal(t, user.Email, foundUser.Email)
-	assert.Equal(t, user.Name, foundUser.Name)
+	t.Run("user not found", func(t *testing.T) {
+		foundUser, err := repos.User.FindByID(rand.Int63())
+		assert.Nil(t, foundUser)
+		assert.True(t, IsNotFound(err))
+	})
 }
 
 func TestUserRepositoryFindByEmail(t *testing.T) {

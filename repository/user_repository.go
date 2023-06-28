@@ -51,6 +51,9 @@ func (r *UserRepository) FindByID(id int64) (*model.User, error) {
 	var user model.User
 	err := r.db.Get(&user, "SELECT * FROM users WHERE user_id = ?", id)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, NewNotFoundError("user")
+		}
 		return nil, err
 	}
 	return &user, nil
