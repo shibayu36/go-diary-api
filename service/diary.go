@@ -42,6 +42,18 @@ func (s *diarysrvc) UserSignup(ctx context.Context, p *diary.UserSignupPayload) 
 }
 
 func (s *diarysrvc) Signin(ctx context.Context, p *diary.SigninPayload) (res string, err error) {
-	s.logger.Print("diary.Signin")
-	return
+	u, err := s.repos.User.FindByEmail(p.Email)
+	if err != nil {
+		if repository.IsNotFound(err) {
+			return "", diary.MakeBadRequest(errors.New("email is invalid"))
+		}
+		return "", err
+	}
+
+	key, err := s.repos.ApiKey.CreateByUser(u)
+	if err != nil {
+		return "", err
+	}
+
+	return key.ApiKey, nil
 }

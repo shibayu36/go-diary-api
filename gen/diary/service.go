@@ -65,6 +65,11 @@ func (e Unauthorized) GoaErrorName() string {
 	return "unauthorized"
 }
 
+// MakeBadRequest builds a goa.ServiceError from an error.
+func MakeBadRequest(err error) *goa.ServiceError {
+	return goa.NewServiceError(err, "bad_request", false, false, false)
+}
+
 // MakeUserValidationError builds a goa.ServiceError from an error.
 func MakeUserValidationError(err error) *goa.ServiceError {
 	return goa.NewServiceError(err, "user_validation_error", false, false, false)

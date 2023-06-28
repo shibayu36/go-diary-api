@@ -61,6 +61,7 @@ var APIKeyAuth = APIKeySecurity("api_key", func() {
 })
 
 var _ = Service("diary", func() {
+	Error("bad_request")
 	Error("unauthorized", String, "Credentials are invalid")
 
 	Error("user_validation_error")
