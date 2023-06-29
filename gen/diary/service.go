@@ -65,29 +65,14 @@ type UserSignupPayload struct {
 	Email string
 }
 
-// Credentials are invalid
-type Unauthorized string
-
-// Error returns an error description.
-func (e Unauthorized) Error() string {
-	return "Credentials are invalid"
-}
-
-// ErrorName returns "unauthorized".
-//
-// Deprecated: Use GoaErrorName - https://github.com/goadesign/goa/issues/3105
-func (e Unauthorized) ErrorName() string {
-	return e.GoaErrorName()
-}
-
-// GoaErrorName returns "unauthorized".
-func (e Unauthorized) GoaErrorName() string {
-	return "unauthorized"
-}
-
 // MakeBadRequest builds a goa.ServiceError from an error.
 func MakeBadRequest(err error) *goa.ServiceError {
 	return goa.NewServiceError(err, "bad_request", false, false, false)
+}
+
+// MakeUnauthorized builds a goa.ServiceError from an error.
+func MakeUnauthorized(err error) *goa.ServiceError {
+	return goa.NewServiceError(err, "unauthorized", false, false, false)
 }
 
 // MakeUserValidationError builds a goa.ServiceError from an error.

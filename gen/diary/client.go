@@ -32,7 +32,7 @@ func NewClient(userSignup, signin, createDiary goa.Endpoint) *Client {
 // UserSignup calls the "UserSignup" endpoint of the "diary" service.
 // UserSignup may return the following errors:
 //   - "bad_request" (type *goa.ServiceError)
-//   - "unauthorized" (type Unauthorized)
+//   - "unauthorized" (type *goa.ServiceError)
 //   - "user_validation_error" (type *goa.ServiceError)
 //   - "user_duplication_error" (type *goa.ServiceError)
 //   - error: internal error
@@ -44,7 +44,7 @@ func (c *Client) UserSignup(ctx context.Context, p *UserSignupPayload) (err erro
 // Signin calls the "Signin" endpoint of the "diary" service.
 // Signin may return the following errors:
 //   - "bad_request" (type *goa.ServiceError)
-//   - "unauthorized" (type Unauthorized)
+//   - "unauthorized" (type *goa.ServiceError)
 //   - "user_validation_error" (type *goa.ServiceError)
 //   - "user_duplication_error" (type *goa.ServiceError)
 //   - error: internal error
@@ -60,7 +60,7 @@ func (c *Client) Signin(ctx context.Context, p *SigninPayload) (res string, err 
 // CreateDiary calls the "CreateDiary" endpoint of the "diary" service.
 // CreateDiary may return the following errors:
 //   - "bad_request" (type *goa.ServiceError)
-//   - "unauthorized" (type Unauthorized)
+//   - "unauthorized" (type *goa.ServiceError)
 //   - "user_validation_error" (type *goa.ServiceError)
 //   - "user_duplication_error" (type *goa.ServiceError)
 //   - error: internal error
