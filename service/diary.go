@@ -24,20 +24,12 @@ func NewDiary(logger *log.Logger, repo *repository.Repository) diary.Service {
 }
 
 func (s *diarysrvc) APIKeyAuth(ctx context.Context, key string, scheme *security.APIKeyScheme) (context.Context, error) {
-	unauthorizedError := diary.MakeUnauthorized(errors.New("invalid token"))
-
-	apiKey, err := s.repo.FindApiKeyByApiKey(key)
+	user, err := s.repo.FindUserByApiKey(key)
 	if err != nil {
-		return ctx, unauthorizedError
-	}
-
-	user, err := s.repo.FindUserByID(apiKey.UserID)
-	if err != nil {
-		return ctx, unauthorizedError
+		return ctx, diary.MakeUnauthorized(errors.New("invalid token"))
 	}
 
 	ctx = context.WithValue(ctx, "user", user)
-
 	return ctx, nil
 }
 

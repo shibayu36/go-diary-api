@@ -73,3 +73,22 @@ func (r *Repository) FindUserByName(name string) (*model.User, error) {
 	}
 	return &user, nil
 }
+
+func (r *Repository) FindUserByApiKey(apiKey string) (*model.User, error) {
+	var user model.User
+	err := r.db.Get(
+		&user,
+		`SELECT u.*
+			FROM users u
+			INNER JOIN api_keys USING (user_id)
+			WHERE ak.api_key = ?`,
+		apiKey,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, NewNotFoundError("user")
+		}
+		return nil, err
+	}
+	return &user, nil
+}
