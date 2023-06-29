@@ -103,4 +103,30 @@ var _ = Service("diary", func() {
 			Response(StatusOK)
 		})
 	})
+
+	Method("CreateDiary", func() {
+		Description("Creates a diary")
+
+		Security(APIKeyAuth)
+
+		Payload(func() {
+			APIKey("api_key", "key", String, "API key used to perform authorization")
+			Attribute("user_name", String, func() {
+				Description("User name")
+			})
+			Attribute("title", String, func() {
+				Description("Diary title")
+			})
+			Required("title")
+		})
+
+		Result(Empty)
+
+		HTTP(func() {
+			// URL is /users/:user_name/diaries
+			POST("/users/{user_name}/diaries")
+			Response(StatusCreated)
+			Header("key:Authorization")
+		})
+	})
 })
