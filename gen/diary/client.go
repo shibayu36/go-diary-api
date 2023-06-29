@@ -15,15 +15,17 @@ import (
 
 // Client is the "diary" service client.
 type Client struct {
-	UserSignupEndpoint goa.Endpoint
-	SigninEndpoint     goa.Endpoint
+	UserSignupEndpoint  goa.Endpoint
+	SigninEndpoint      goa.Endpoint
+	CreateDiaryEndpoint goa.Endpoint
 }
 
 // NewClient initializes a "diary" service client given the endpoints.
-func NewClient(userSignup, signin goa.Endpoint) *Client {
+func NewClient(userSignup, signin, createDiary goa.Endpoint) *Client {
 	return &Client{
-		UserSignupEndpoint: userSignup,
-		SigninEndpoint:     signin,
+		UserSignupEndpoint:  userSignup,
+		SigninEndpoint:      signin,
+		CreateDiaryEndpoint: createDiary,
 	}
 }
 
@@ -53,4 +55,16 @@ func (c *Client) Signin(ctx context.Context, p *SigninPayload) (res string, err 
 		return
 	}
 	return ires.(string), nil
+}
+
+// CreateDiary calls the "CreateDiary" endpoint of the "diary" service.
+// CreateDiary may return the following errors:
+//   - "bad_request" (type *goa.ServiceError)
+//   - "unauthorized" (type Unauthorized)
+//   - "user_validation_error" (type *goa.ServiceError)
+//   - "user_duplication_error" (type *goa.ServiceError)
+//   - error: internal error
+func (c *Client) CreateDiary(ctx context.Context, p *CreateDiaryPayload) (err error) {
+	_, err = c.CreateDiaryEndpoint(ctx, p)
+	return
 }

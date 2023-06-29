@@ -20,7 +20,7 @@ paths:
                         schema:
                             $ref: '#/components/schemas/SigninRequestBody'
                         example:
-                            email: Dicta dolores itaque accusamus ducimus distinctio ab.
+                            email: Qui id hic vel est.
             responses:
                 "200":
                     description: OK response.
@@ -28,8 +28,8 @@ paths:
                         application/json:
                             schema:
                                 type: string
-                                example: Similique sint cupiditate id et enim.
-                            example: Culpa pariatur in assumenda voluptatem rerum.
+                                example: Dolor odio dolor eveniet.
+                            example: Facere ea adipisci id eveniet vel eius.
     /signup:
         post:
             tags:
@@ -43,8 +43,8 @@ paths:
                         schema:
                             $ref: '#/components/schemas/UserSignupRequestBody'
                         example:
-                            email: Consequatur quis aperiam assumenda.
-                            name: Eius voluptatem necessitatibus.
+                            email: Et repellendus ullam autem.
+                            name: Corrupti necessitatibus iure.
             responses:
                 "201":
                     description: Created response.
@@ -53,17 +53,63 @@ paths:
                             schema:
                                 type: string
                                 format: binary
+    /users/{user_name}/diaries:
+        post:
+            tags:
+                - diary
+            summary: CreateDiary diary
+            description: Creates a diary
+            operationId: diary#CreateDiary
+            parameters:
+                - name: user_name
+                  in: path
+                  description: User name
+                  required: true
+                  schema:
+                    type: string
+                    description: User name
+                    example: Commodi soluta et.
+                  example: Eligendi consectetur unde expedita fuga.
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateDiaryRequestBody'
+                        example:
+                            title: Facilis cum laudantium sit rerum.
+            responses:
+                "201":
+                    description: Created response.
+                    content:
+                        application/json:
+                            schema:
+                                type: string
+                                format: binary
+            security:
+                - api_key_header_Authorization: []
 components:
     schemas:
+        CreateDiaryRequestBody:
+            type: object
+            properties:
+                title:
+                    type: string
+                    description: Diary title
+                    example: Cumque accusantium hic sit est ullam nisi.
+            example:
+                title: Enim nobis minus enim illum aliquid.
+            required:
+                - title
         SigninRequestBody:
             type: object
             properties:
                 email:
                     type: string
                     description: User email
-                    example: Aut commodi dolorem eligendi dolor nemo provident.
+                    example: Nesciunt sint odit at et expedita.
             example:
-                email: Tempore incidunt.
+                email: Illum praesentium soluta veniam.
             required:
                 - email
         UserSignupRequestBody:
@@ -72,16 +118,22 @@ components:
                 email:
                     type: string
                     description: User email
-                    example: Modi est eos perspiciatis earum.
+                    example: Voluptas voluptatem quam impedit ullam et.
                 name:
                     type: string
                     description: User name
-                    example: Unde consequatur.
+                    example: Aliquam non soluta illo sit ipsam.
             example:
-                email: Voluptatem laudantium voluptatem est.
-                name: Impedit deserunt.
+                email: Omnis illo occaecati minima.
+                name: Quibusdam non.
             required:
                 - name
                 - email
+    securitySchemes:
+        api_key_header_Authorization:
+            type: apiKey
+            description: Secures endpoint by requiring an API key.
+            name: Authorization
+            in: header
 tags:
     - name: diary

@@ -27,6 +27,13 @@ type SigninRequestBody struct {
 	Email string `form:"email" json:"email" xml:"email"`
 }
 
+// CreateDiaryRequestBody is the type of the "diary" service "CreateDiary"
+// endpoint HTTP request body.
+type CreateDiaryRequestBody struct {
+	// Diary title
+	Title string `form:"title" json:"title" xml:"title"`
+}
+
 // NewUserSignupRequestBody builds the HTTP request body from the payload of
 // the "UserSignup" endpoint of the "diary" service.
 func NewUserSignupRequestBody(p *diary.UserSignupPayload) *UserSignupRequestBody {
@@ -42,6 +49,15 @@ func NewUserSignupRequestBody(p *diary.UserSignupPayload) *UserSignupRequestBody
 func NewSigninRequestBody(p *diary.SigninPayload) *SigninRequestBody {
 	body := &SigninRequestBody{
 		Email: p.Email,
+	}
+	return body
+}
+
+// NewCreateDiaryRequestBody builds the HTTP request body from the payload of
+// the "CreateDiary" endpoint of the "diary" service.
+func NewCreateDiaryRequestBody(p *diary.CreateDiaryPayload) *CreateDiaryRequestBody {
+	body := &CreateDiaryRequestBody{
+		Title: p.Title,
 	}
 	return body
 }

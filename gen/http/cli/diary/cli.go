@@ -22,15 +22,15 @@ import (
 //
 //	command (subcommand1|subcommand2|...)
 func UsageCommands() string {
-	return `diary (user-signup|signin)
+	return `diary (user-signup|signin|create-diary)
 `
 }
 
 // UsageExamples produces an example of a valid invocation of the CLI tool.
 func UsageExamples() string {
 	return os.Args[0] + ` diary user-signup --body '{
-      "email": "Consequatur quis aperiam assumenda.",
-      "name": "Eius voluptatem necessitatibus."
+      "email": "Et repellendus ullam autem.",
+      "name": "Corrupti necessitatibus iure."
    }'` + "\n" +
 		""
 }
@@ -52,10 +52,16 @@ func ParseEndpoint(
 
 		diarySigninFlags    = flag.NewFlagSet("signin", flag.ExitOnError)
 		diarySigninBodyFlag = diarySigninFlags.String("body", "REQUIRED", "")
+
+		diaryCreateDiaryFlags        = flag.NewFlagSet("create-diary", flag.ExitOnError)
+		diaryCreateDiaryBodyFlag     = diaryCreateDiaryFlags.String("body", "REQUIRED", "")
+		diaryCreateDiaryUserNameFlag = diaryCreateDiaryFlags.String("user-name", "REQUIRED", "User name")
+		diaryCreateDiaryKeyFlag      = diaryCreateDiaryFlags.String("key", "", "")
 	)
 	diaryFlags.Usage = diaryUsage
 	diaryUserSignupFlags.Usage = diaryUserSignupUsage
 	diarySigninFlags.Usage = diarySigninUsage
+	diaryCreateDiaryFlags.Usage = diaryCreateDiaryUsage
 
 	if err := flag.CommandLine.Parse(os.Args[1:]); err != nil {
 		return nil, nil, err
@@ -97,6 +103,9 @@ func ParseEndpoint(
 			case "signin":
 				epf = diarySigninFlags
 
+			case "create-diary":
+				epf = diaryCreateDiaryFlags
+
 			}
 
 		}
@@ -128,6 +137,9 @@ func ParseEndpoint(
 			case "signin":
 				endpoint = c.Signin()
 				data, err = diaryc.BuildSigninPayload(*diarySigninBodyFlag)
+			case "create-diary":
+				endpoint = c.CreateDiary()
+				data, err = diaryc.BuildCreateDiaryPayload(*diaryCreateDiaryBodyFlag, *diaryCreateDiaryUserNameFlag, *diaryCreateDiaryKeyFlag)
 			}
 		}
 	}
@@ -147,6 +159,7 @@ Usage:
 COMMAND:
     user-signup: UserSignup implements UserSignup.
     signin: Creates a valid API token
+    create-diary: Creates a diary
 
 Additional help:
     %[1]s diary COMMAND --help
@@ -160,8 +173,8 @@ UserSignup implements UserSignup.
 
 Example:
     %[1]s diary user-signup --body '{
-      "email": "Consequatur quis aperiam assumenda.",
-      "name": "Eius voluptatem necessitatibus."
+      "email": "Et repellendus ullam autem.",
+      "name": "Corrupti necessitatibus iure."
    }'
 `, os.Args[0])
 }
@@ -174,7 +187,22 @@ Creates a valid API token
 
 Example:
     %[1]s diary signin --body '{
-      "email": "Dicta dolores itaque accusamus ducimus distinctio ab."
+      "email": "Qui id hic vel est."
    }'
+`, os.Args[0])
+}
+
+func diaryCreateDiaryUsage() {
+	fmt.Fprintf(os.Stderr, `%[1]s [flags] diary create-diary -body JSON -user-name STRING -key STRING
+
+Creates a diary
+    -body JSON: 
+    -user-name STRING: User name
+    -key STRING: 
+
+Example:
+    %[1]s diary create-diary --body '{
+      "title": "Facilis cum laudantium sit rerum."
+   }' --user-name "Rem explicabo quo harum molestias facere." --key "Unde consequatur."
 `, os.Args[0])
 }

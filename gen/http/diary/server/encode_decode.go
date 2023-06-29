@@ -11,6 +11,7 @@ import (
 	"context"
 	"io"
 	"net/http"
+	"strings"
 
 	goahttp "goa.design/goa/v3/http"
 	goa "goa.design/goa/v3/pkg"
@@ -82,6 +83,59 @@ func DecodeSigninRequest(mux goahttp.Muxer, decoder func(*http.Request) goahttp.
 			return nil, err
 		}
 		payload := NewSigninPayload(&body)
+
+		return payload, nil
+	}
+}
+
+// EncodeCreateDiaryResponse returns an encoder for responses returned by the
+// diary CreateDiary endpoint.
+func EncodeCreateDiaryResponse(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder) func(context.Context, http.ResponseWriter, any) error {
+	return func(ctx context.Context, w http.ResponseWriter, v any) error {
+		w.WriteHeader(http.StatusCreated)
+		return nil
+	}
+}
+
+// DecodeCreateDiaryRequest returns a decoder for requests sent to the diary
+// CreateDiary endpoint.
+func DecodeCreateDiaryRequest(mux goahttp.Muxer, decoder func(*http.Request) goahttp.Decoder) func(*http.Request) (any, error) {
+	return func(r *http.Request) (any, error) {
+		var (
+			body CreateDiaryRequestBody
+			err  error
+		)
+		err = decoder(r).Decode(&body)
+		if err != nil {
+			if err == io.EOF {
+				return nil, goa.MissingPayloadError()
+			}
+			return nil, goa.DecodePayloadError(err.Error())
+		}
+		err = ValidateCreateDiaryRequestBody(&body)
+		if err != nil {
+			return nil, err
+		}
+
+		var (
+			userName string
+			key      *string
+
+			params = mux.Vars(r)
+		)
+		userName = params["user_name"]
+		keyRaw := r.Header.Get("Authorization")
+		if keyRaw != "" {
+			key = &keyRaw
+		}
+		payload := NewCreateDiaryPayload(&body, userName, key)
+		if payload.Key != nil {
+			if strings.Contains(*payload.Key, " ") {
+				// Remove authorization scheme prefix (e.g. "Bearer")
+				cred := strings.SplitN(*payload.Key, " ", 2)[1]
+				payload.Key = &cred
+			}
+		}
 
 		return payload, nil
 	}

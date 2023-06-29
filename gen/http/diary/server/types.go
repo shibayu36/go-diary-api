@@ -28,6 +28,13 @@ type SigninRequestBody struct {
 	Email *string `form:"email,omitempty" json:"email,omitempty" xml:"email,omitempty"`
 }
 
+// CreateDiaryRequestBody is the type of the "diary" service "CreateDiary"
+// endpoint HTTP request body.
+type CreateDiaryRequestBody struct {
+	// Diary title
+	Title *string `form:"title,omitempty" json:"title,omitempty" xml:"title,omitempty"`
+}
+
 // NewUserSignupPayload builds a diary service UserSignup endpoint payload.
 func NewUserSignupPayload(body *UserSignupRequestBody) *diary.UserSignupPayload {
 	v := &diary.UserSignupPayload{
@@ -43,6 +50,17 @@ func NewSigninPayload(body *SigninRequestBody) *diary.SigninPayload {
 	v := &diary.SigninPayload{
 		Email: *body.Email,
 	}
+
+	return v
+}
+
+// NewCreateDiaryPayload builds a diary service CreateDiary endpoint payload.
+func NewCreateDiaryPayload(body *CreateDiaryRequestBody, userName string, key *string) *diary.CreateDiaryPayload {
+	v := &diary.CreateDiaryPayload{
+		Title: *body.Title,
+	}
+	v.UserName = &userName
+	v.Key = key
 
 	return v
 }
@@ -63,6 +81,15 @@ func ValidateUserSignupRequestBody(body *UserSignupRequestBody) (err error) {
 func ValidateSigninRequestBody(body *SigninRequestBody) (err error) {
 	if body.Email == nil {
 		err = goa.MergeErrors(err, goa.MissingFieldError("email", "body"))
+	}
+	return
+}
+
+// ValidateCreateDiaryRequestBody runs the validations defined on
+// CreateDiaryRequestBody
+func ValidateCreateDiaryRequestBody(body *CreateDiaryRequestBody) (err error) {
+	if body.Title == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("title", "body"))
 	}
 	return
 }

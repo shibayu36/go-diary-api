@@ -7,6 +7,10 @@
 
 package client
 
+import (
+	"fmt"
+)
+
 // UserSignupDiaryPath returns the URL path to the diary service UserSignup HTTP endpoint.
 func UserSignupDiaryPath() string {
 	return "/signup"
@@ -15,4 +19,9 @@ func UserSignupDiaryPath() string {
 // SigninDiaryPath returns the URL path to the diary service Signin HTTP endpoint.
 func SigninDiaryPath() string {
 	return "/signin"
+}
+
+// CreateDiaryDiaryPath returns the URL path to the diary service CreateDiary HTTP endpoint.
+func CreateDiaryDiaryPath(userName string) string {
+	return fmt.Sprintf("/users/%v/diaries", userName)
 }

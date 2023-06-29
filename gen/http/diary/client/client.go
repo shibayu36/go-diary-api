@@ -24,6 +24,10 @@ type Client struct {
 	// Signin Doer is the HTTP client used to make requests to the Signin endpoint.
 	SigninDoer goahttp.Doer
 
+	// CreateDiary Doer is the HTTP client used to make requests to the CreateDiary
+	// endpoint.
+	CreateDiaryDoer goahttp.Doer
+
 	// RestoreResponseBody controls whether the response bodies are reset after
 	// decoding so they can be read again.
 	RestoreResponseBody bool
@@ -46,6 +50,7 @@ func NewClient(
 	return &Client{
 		UserSignupDoer:      doer,
 		SigninDoer:          doer,
+		CreateDiaryDoer:     doer,
 		RestoreResponseBody: restoreBody,
 		scheme:              scheme,
 		host:                host,
@@ -97,6 +102,30 @@ func (c *Client) Signin() goa.Endpoint {
 		resp, err := c.SigninDoer.Do(req)
 		if err != nil {
 			return nil, goahttp.ErrRequestError("diary", "Signin", err)
+		}
+		return decodeResponse(resp)
+	}
+}
+
+// CreateDiary returns an endpoint that makes HTTP requests to the diary
+// service CreateDiary server.
+func (c *Client) CreateDiary() goa.Endpoint {
+	var (
+		encodeRequest  = EncodeCreateDiaryRequest(c.encoder)
+		decodeResponse = DecodeCreateDiaryResponse(c.decoder, c.RestoreResponseBody)
+	)
+	return func(ctx context.Context, v any) (any, error) {
+		req, err := c.BuildCreateDiaryRequest(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+		err = encodeRequest(req, v)
+		if err != nil {
+			return nil, err
+		}
+		resp, err := c.CreateDiaryDoer.Do(req)
+		if err != nil {
+			return nil, goahttp.ErrRequestError("diary", "CreateDiary", err)
 		}
 		return decodeResponse(resp)
 	}

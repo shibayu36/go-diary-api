@@ -22,7 +22,7 @@ func BuildUserSignupPayload(diaryUserSignupBody string) (*diary.UserSignupPayloa
 	{
 		err = json.Unmarshal([]byte(diaryUserSignupBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"email\": \"Consequatur quis aperiam assumenda.\",\n      \"name\": \"Eius voluptatem necessitatibus.\"\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"email\": \"Et repellendus ullam autem.\",\n      \"name\": \"Corrupti necessitatibus iure.\"\n   }'")
 		}
 	}
 	v := &diary.UserSignupPayload{
@@ -41,12 +41,42 @@ func BuildSigninPayload(diarySigninBody string) (*diary.SigninPayload, error) {
 	{
 		err = json.Unmarshal([]byte(diarySigninBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"email\": \"Dicta dolores itaque accusamus ducimus distinctio ab.\"\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"email\": \"Qui id hic vel est.\"\n   }'")
 		}
 	}
 	v := &diary.SigninPayload{
 		Email: body.Email,
 	}
+
+	return v, nil
+}
+
+// BuildCreateDiaryPayload builds the payload for the diary CreateDiary
+// endpoint from CLI flags.
+func BuildCreateDiaryPayload(diaryCreateDiaryBody string, diaryCreateDiaryUserName string, diaryCreateDiaryKey string) (*diary.CreateDiaryPayload, error) {
+	var err error
+	var body CreateDiaryRequestBody
+	{
+		err = json.Unmarshal([]byte(diaryCreateDiaryBody), &body)
+		if err != nil {
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"title\": \"Facilis cum laudantium sit rerum.\"\n   }'")
+		}
+	}
+	var userName string
+	{
+		userName = diaryCreateDiaryUserName
+	}
+	var key *string
+	{
+		if diaryCreateDiaryKey != "" {
+			key = &diaryCreateDiaryKey
+		}
+	}
+	v := &diary.CreateDiaryPayload{
+		Title: body.Title,
+	}
+	v.UserName = &userName
+	v.Key = key
 
 	return v, nil
 }

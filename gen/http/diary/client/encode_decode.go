@@ -141,3 +141,77 @@ func DecodeSigninResponse(decoder func(*http.Response) goahttp.Decoder, restoreB
 		}
 	}
 }
+
+// BuildCreateDiaryRequest instantiates a HTTP request object with method and
+// path set to call the "diary" service "CreateDiary" endpoint
+func (c *Client) BuildCreateDiaryRequest(ctx context.Context, v any) (*http.Request, error) {
+	var (
+		userName string
+	)
+	{
+		p, ok := v.(*diary.CreateDiaryPayload)
+		if !ok {
+			return nil, goahttp.ErrInvalidType("diary", "CreateDiary", "*diary.CreateDiaryPayload", v)
+		}
+		if p.UserName != nil {
+			userName = *p.UserName
+		}
+	}
+	u := &url.URL{Scheme: c.scheme, Host: c.host, Path: CreateDiaryDiaryPath(userName)}
+	req, err := http.NewRequest("POST", u.String(), nil)
+	if err != nil {
+		return nil, goahttp.ErrInvalidURL("diary", "CreateDiary", u.String(), err)
+	}
+	if ctx != nil {
+		req = req.WithContext(ctx)
+	}
+
+	return req, nil
+}
+
+// EncodeCreateDiaryRequest returns an encoder for requests sent to the diary
+// CreateDiary server.
+func EncodeCreateDiaryRequest(encoder func(*http.Request) goahttp.Encoder) func(*http.Request, any) error {
+	return func(req *http.Request, v any) error {
+		p, ok := v.(*diary.CreateDiaryPayload)
+		if !ok {
+			return goahttp.ErrInvalidType("diary", "CreateDiary", "*diary.CreateDiaryPayload", v)
+		}
+		if p.Key != nil {
+			head := *p.Key
+			req.Header.Set("Authorization", head)
+		}
+		body := NewCreateDiaryRequestBody(p)
+		if err := encoder(req).Encode(&body); err != nil {
+			return goahttp.ErrEncodingError("diary", "CreateDiary", err)
+		}
+		return nil
+	}
+}
+
+// DecodeCreateDiaryResponse returns a decoder for responses returned by the
+// diary CreateDiary endpoint. restoreBody controls whether the response body
+// should be restored after having been read.
+func DecodeCreateDiaryResponse(decoder func(*http.Response) goahttp.Decoder, restoreBody bool) func(*http.Response) (any, error) {
+	return func(resp *http.Response) (any, error) {
+		if restoreBody {
+			b, err := io.ReadAll(resp.Body)
+			if err != nil {
+				return nil, err
+			}
+			resp.Body = io.NopCloser(bytes.NewBuffer(b))
+			defer func() {
+				resp.Body = io.NopCloser(bytes.NewBuffer(b))
+			}()
+		} else {
+			defer resp.Body.Close()
+		}
+		switch resp.StatusCode {
+		case http.StatusCreated:
+			return nil, nil
+		default:
+			body, _ := io.ReadAll(resp.Body)
+			return nil, goahttp.ErrInvalidResponse("diary", "CreateDiary", resp.StatusCode, string(body))
+		}
+	}
+}

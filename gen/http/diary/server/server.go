@@ -18,9 +18,10 @@ import (
 
 // Server lists the diary service endpoint HTTP handlers.
 type Server struct {
-	Mounts     []*MountPoint
-	UserSignup http.Handler
-	Signin     http.Handler
+	Mounts      []*MountPoint
+	UserSignup  http.Handler
+	Signin      http.Handler
+	CreateDiary http.Handler
 }
 
 // MountPoint holds information about the mounted endpoints.
@@ -52,9 +53,11 @@ func New(
 		Mounts: []*MountPoint{
 			{"UserSignup", "POST", "/signup"},
 			{"Signin", "POST", "/signin"},
+			{"CreateDiary", "POST", "/users/{user_name}/diaries"},
 		},
-		UserSignup: NewUserSignupHandler(e.UserSignup, mux, decoder, encoder, errhandler, formatter),
-		Signin:     NewSigninHandler(e.Signin, mux, decoder, encoder, errhandler, formatter),
+		UserSignup:  NewUserSignupHandler(e.UserSignup, mux, decoder, encoder, errhandler, formatter),
+		Signin:      NewSigninHandler(e.Signin, mux, decoder, encoder, errhandler, formatter),
+		CreateDiary: NewCreateDiaryHandler(e.CreateDiary, mux, decoder, encoder, errhandler, formatter),
 	}
 }
 
@@ -65,6 +68,7 @@ func (s *Server) Service() string { return "diary" }
 func (s *Server) Use(m func(http.Handler) http.Handler) {
 	s.UserSignup = m(s.UserSignup)
 	s.Signin = m(s.Signin)
+	s.CreateDiary = m(s.CreateDiary)
 }
 
 // MethodNames returns the methods served.
@@ -74,6 +78,7 @@ func (s *Server) MethodNames() []string { return diary.MethodNames[:] }
 func Mount(mux goahttp.Muxer, h *Server) {
 	MountUserSignupHandler(mux, h.UserSignup)
 	MountSigninHandler(mux, h.Signin)
+	MountCreateDiaryHandler(mux, h.CreateDiary)
 }
 
 // Mount configures the mux to serve the diary endpoints.
@@ -162,6 +167,57 @@ func NewSigninHandler(
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := context.WithValue(r.Context(), goahttp.AcceptTypeKey, r.Header.Get("Accept"))
 		ctx = context.WithValue(ctx, goa.MethodKey, "Signin")
+		ctx = context.WithValue(ctx, goa.ServiceKey, "diary")
+		payload, err := decodeRequest(r)
+		if err != nil {
+			if err := encodeError(ctx, w, err); err != nil {
+				errhandler(ctx, w, err)
+			}
+			return
+		}
+		res, err := endpoint(ctx, payload)
+		if err != nil {
+			if err := encodeError(ctx, w, err); err != nil {
+				errhandler(ctx, w, err)
+			}
+			return
+		}
+		if err := encodeResponse(ctx, w, res); err != nil {
+			errhandler(ctx, w, err)
+		}
+	})
+}
+
+// MountCreateDiaryHandler configures the mux to serve the "diary" service
+// "CreateDiary" endpoint.
+func MountCreateDiaryHandler(mux goahttp.Muxer, h http.Handler) {
+	f, ok := h.(http.HandlerFunc)
+	if !ok {
+		f = func(w http.ResponseWriter, r *http.Request) {
+			h.ServeHTTP(w, r)
+		}
+	}
+	mux.Handle("POST", "/users/{user_name}/diaries", f)
+}
+
+// NewCreateDiaryHandler creates a HTTP handler which loads the HTTP request
+// and calls the "diary" service "CreateDiary" endpoint.
+func NewCreateDiaryHandler(
+	endpoint goa.Endpoint,
+	mux goahttp.Muxer,
+	decoder func(*http.Request) goahttp.Decoder,
+	encoder func(context.Context, http.ResponseWriter) goahttp.Encoder,
+	errhandler func(context.Context, http.ResponseWriter, error),
+	formatter func(ctx context.Context, err error) goahttp.Statuser,
+) http.Handler {
+	var (
+		decodeRequest  = DecodeCreateDiaryRequest(mux, decoder)
+		encodeResponse = EncodeCreateDiaryResponse(encoder)
+		encodeError    = goahttp.ErrorEncoder(encoder, formatter)
+	)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := context.WithValue(r.Context(), goahttp.AcceptTypeKey, r.Header.Get("Accept"))
+		ctx = context.WithValue(ctx, goa.MethodKey, "CreateDiary")
 		ctx = context.WithValue(ctx, goa.ServiceKey, "diary")
 		payload, err := decodeRequest(r)
 		if err != nil {

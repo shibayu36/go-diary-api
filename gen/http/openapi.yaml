@@ -55,7 +55,51 @@ paths:
                     description: Created response.
             schemes:
                 - http
+    /users/{user_name}/diaries:
+        post:
+            tags:
+                - diary
+            summary: CreateDiary diary
+            description: Creates a diary
+            operationId: diary#CreateDiary
+            parameters:
+                - name: user_name
+                  in: path
+                  description: User name
+                  required: true
+                  type: string
+                - name: Authorization
+                  in: header
+                  description: API key used to perform authorization
+                  required: false
+                  type: string
+                - name: CreateDiaryRequestBody
+                  in: body
+                  required: true
+                  schema:
+                    $ref: '#/definitions/DiaryCreateDiaryRequestBody'
+                    required:
+                        - title
+            responses:
+                "201":
+                    description: Created response.
+            schemes:
+                - http
+            security:
+                - api_key_header_Authorization: []
 definitions:
+    DiaryCreateDiaryRequestBody:
+        title: DiaryCreateDiaryRequestBody
+        type: object
+        properties:
+            title:
+                type: string
+                description: Diary title
+                example: Culpa pariatur in assumenda voluptatem rerum.
+        example:
+            title: Ut magnam vel ut repellat asperiores.
+        required:
+            - title
     DiarySigninRequestBody:
         title: DiarySigninRequestBody
         type: object
@@ -63,9 +107,9 @@ definitions:
             email:
                 type: string
                 description: User email
-                example: Facilis cum laudantium sit rerum.
+                example: Tempore incidunt.
         example:
-            email: Rem explicabo quo harum molestias facere.
+            email: Similique sint cupiditate id et enim.
         required:
             - email
     DiaryUserSignupRequestBody:
@@ -75,14 +119,20 @@ definitions:
             email:
                 type: string
                 description: User email
-                example: Quia deleniti numquam vitae quaerat illo.
+                example: Impedit deserunt.
             name:
                 type: string
                 description: User name
-                example: Qui id hic vel est.
+                example: Modi est eos perspiciatis earum.
         example:
-            email: Voluptatibus eligendi et eligendi occaecati.
-            name: Occaecati laboriosam molestiae necessitatibus nobis velit.
+            email: Aut commodi dolorem eligendi dolor nemo provident.
+            name: Voluptatem laudantium voluptatem est.
         required:
             - name
             - email
+securityDefinitions:
+    api_key_header_Authorization:
+        type: apiKey
+        description: Secures endpoint by requiring an API key.
+        name: Authorization
+        in: header

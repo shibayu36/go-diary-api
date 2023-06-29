@@ -11,6 +11,7 @@ import (
 	"context"
 
 	goa "goa.design/goa/v3/pkg"
+	"goa.design/goa/v3/security"
 )
 
 // Service is the diary service interface.
@@ -19,6 +20,14 @@ type Service interface {
 	UserSignup(context.Context, *UserSignupPayload) (err error)
 	// Creates a valid API token
 	Signin(context.Context, *SigninPayload) (res string, err error)
+	// Creates a diary
+	CreateDiary(context.Context, *CreateDiaryPayload) (err error)
+}
+
+// Auther defines the authorization functions to be implemented by the service.
+type Auther interface {
+	// APIKeyAuth implements the authorization logic for the APIKey security scheme.
+	APIKeyAuth(ctx context.Context, key string, schema *security.APIKeyScheme) (context.Context, error)
 }
 
 // ServiceName is the name of the service as defined in the design. This is the
@@ -29,7 +38,18 @@ const ServiceName = "diary"
 // MethodNames lists the service method names as defined in the design. These
 // are the same values that are set in the endpoint request contexts under the
 // MethodKey key.
-var MethodNames = [2]string{"UserSignup", "Signin"}
+var MethodNames = [3]string{"UserSignup", "Signin", "CreateDiary"}
+
+// CreateDiaryPayload is the payload type of the diary service CreateDiary
+// method.
+type CreateDiaryPayload struct {
+	// API key used to perform authorization
+	Key *string
+	// User name
+	UserName *string
+	// Diary title
+	Title string
+}
 
 // SigninPayload is the payload type of the diary service Signin method.
 type SigninPayload struct {
