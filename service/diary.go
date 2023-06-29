@@ -15,23 +15,23 @@ import (
 // The example methods log the requests and return zero values.
 type diarysrvc struct {
 	logger *log.Logger
-	repos  *repository.Repositories
+	repo   *repository.Repository
 }
 
 // NewDiary returns the diary service implementation.
-func NewDiary(logger *log.Logger, repos *repository.Repositories) diary.Service {
-	return &diarysrvc{logger, repos}
+func NewDiary(logger *log.Logger, repo *repository.Repository) diary.Service {
+	return &diarysrvc{logger, repo}
 }
 
 func (s *diarysrvc) APIKeyAuth(ctx context.Context, key string, scheme *security.APIKeyScheme) (context.Context, error) {
 	unauthorizedError := diary.MakeUnauthorized(errors.New("invalid token"))
 
-	apiKey, err := s.repos.ApiKey.FindByApiKey(key)
+	apiKey, err := s.repo.FindApiKeyByApiKey(key)
 	if err != nil {
 		return ctx, unauthorizedError
 	}
 
-	user, err := s.repos.User.FindByID(apiKey.UserID)
+	user, err := s.repo.FindUserByID(apiKey.UserID)
 	if err != nil {
 		return ctx, unauthorizedError
 	}
@@ -43,7 +43,7 @@ func (s *diarysrvc) APIKeyAuth(ctx context.Context, key string, scheme *security
 
 // UserSignup implements UserSignup.
 func (s *diarysrvc) UserSignup(ctx context.Context, p *diary.UserSignupPayload) (err error) {
-	_, err = s.repos.User.Create(p.Email, p.Name)
+	_, err = s.repo.CreateUser(p.Email, p.Name)
 
 	if err != nil {
 		var validationError *model.ValidationError
@@ -61,7 +61,7 @@ func (s *diarysrvc) UserSignup(ctx context.Context, p *diary.UserSignupPayload) 
 }
 
 func (s *diarysrvc) Signin(ctx context.Context, p *diary.SigninPayload) (res string, err error) {
-	u, err := s.repos.User.FindByEmail(p.Email)
+	u, err := s.repo.FindUserByEmail(p.Email)
 	if err != nil {
 		if repository.IsNotFound(err) {
 			return "", diary.MakeBadRequest(errors.New("email is invalid"))
@@ -69,7 +69,7 @@ func (s *diarysrvc) Signin(ctx context.Context, p *diary.SigninPayload) (res str
 		return "", err
 	}
 
-	key, err := s.repos.ApiKey.CreateByUser(u)
+	key, err := s.repo.CreateApiKeyByUser(u)
 	if err != nil {
 		return "", err
 	}

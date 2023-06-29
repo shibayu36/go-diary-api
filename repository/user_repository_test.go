@@ -16,7 +16,7 @@ func TestUserRepositoryCreate(t *testing.T) {
 		email := testutil.RandomEmail()
 		name := testutil.RandomString(10)
 
-		user, err := repos.User.Create(
+		user, err := repo.CreateUser(
 			email, name,
 		)
 		assert.Nil(t, err)
@@ -25,7 +25,7 @@ func TestUserRepositoryCreate(t *testing.T) {
 		assert.Equal(t, flextime.Now(), user.CreatedAt)
 		assert.Equal(t, flextime.Now(), user.UpdatedAt)
 
-		foundUser, _ := repos.User.FindByID(user.UserID)
+		foundUser, _ := repo.FindUserByID(user.UserID)
 		assert.Equal(t, user.UserID, foundUser.UserID, "user is created correctly")
 	})
 
@@ -33,7 +33,7 @@ func TestUserRepositoryCreate(t *testing.T) {
 		email := "invalidemail"
 		name := testutil.RandomString(10)
 
-		_, err := repos.User.Create(
+		_, err := repo.CreateUser(
 			email, name,
 		)
 
@@ -44,11 +44,11 @@ func TestUserRepositoryCreate(t *testing.T) {
 		email := testutil.RandomEmail()
 		name := testutil.RandomString(10)
 
-		_, _ = repos.User.Create(
+		_, _ = repo.CreateUser(
 			email, name,
 		)
 
-		_, err := repos.User.Create(
+		_, err := repo.CreateUser(
 			email, name,
 		)
 
@@ -61,18 +61,18 @@ func TestUserRepositoryFindByID(t *testing.T) {
 	t.Run("user found", func(t *testing.T) {
 		email := testutil.RandomEmail()
 		name := testutil.RandomString(10)
-		user, _ := repos.User.Create(
+		user, _ := repo.CreateUser(
 			email, name,
 		)
 
-		foundUser, err := repos.User.FindByID(user.UserID)
+		foundUser, err := repo.FindUserByID(user.UserID)
 		assert.Nil(t, err)
 		assert.Equal(t, user.Email, foundUser.Email)
 		assert.Equal(t, user.Name, foundUser.Name)
 	})
 
 	t.Run("user not found", func(t *testing.T) {
-		foundUser, err := repos.User.FindByID(rand.Int63())
+		foundUser, err := repo.FindUserByID(rand.Int63())
 		assert.Nil(t, foundUser)
 		assert.True(t, IsNotFound(err))
 	})
@@ -82,17 +82,17 @@ func TestUserRepositoryFindByEmail(t *testing.T) {
 	t.Run("user found", func(t *testing.T) {
 		email := testutil.RandomEmail()
 		name := testutil.RandomString(10)
-		user, _ := repos.User.Create(
+		user, _ := repo.CreateUser(
 			email, name,
 		)
 
-		foundUser, err := repos.User.FindByEmail(email)
+		foundUser, err := repo.FindUserByEmail(email)
 		assert.Nil(t, err)
 		assert.Equal(t, user.Email, foundUser.Email)
 	})
 
 	t.Run("user not found", func(t *testing.T) {
-		foundUser, err := repos.User.FindByEmail(testutil.RandomEmail())
+		foundUser, err := repo.FindUserByEmail(testutil.RandomEmail())
 		assert.Nil(t, foundUser)
 		assert.True(t, IsNotFound(err))
 	})

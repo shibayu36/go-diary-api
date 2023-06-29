@@ -5,19 +5,10 @@ import (
 
 	"github.com/Songmu/flextime"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/jmoiron/sqlx"
 	"github.com/shibayu36/go-diary-api/model"
 )
 
-type UserRepository struct {
-	db *sqlx.DB
-}
-
-func NewUserRepository(db *sqlx.DB) *UserRepository {
-	return &UserRepository{db: db}
-}
-
-func (r *UserRepository) Create(email string, name string) (*model.User, error) {
+func (r *Repository) CreateUser(email string, name string) (*model.User, error) {
 	if err := model.ValidateUser(email, name); err != nil {
 		return nil, err
 	}
@@ -47,7 +38,7 @@ func (r *UserRepository) Create(email string, name string) (*model.User, error) 
 	return user, nil
 }
 
-func (r *UserRepository) FindByID(id int64) (*model.User, error) {
+func (r *Repository) FindUserByID(id int64) (*model.User, error) {
 	var user model.User
 	err := r.db.Get(&user, "SELECT * FROM users WHERE user_id = ?", id)
 	if err != nil {
@@ -59,9 +50,21 @@ func (r *UserRepository) FindByID(id int64) (*model.User, error) {
 	return &user, nil
 }
 
-func (r *UserRepository) FindByEmail(email string) (*model.User, error) {
+func (r *Repository) FindUserByEmail(email string) (*model.User, error) {
 	var user model.User
 	err := r.db.Get(&user, "SELECT * FROM users WHERE email = ?", email)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, NewNotFoundError("user")
+		}
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (r *Repository) FindUserByName(name string) (*model.User, error) {
+	var user model.User
+	err := r.db.Get(&user, "SELECT * FROM users WHERE name = ?", name)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return nil, NewNotFoundError("user")

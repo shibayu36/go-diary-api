@@ -44,18 +44,18 @@ func main() {
 	}
 
 	// Initialize the repositories
-	repos, err := repository.NewRepositories(c.DbDsn)
+	repo, err := repository.NewRepository(c.DbDsn)
 	if err != nil {
 		logger.Fatal(fmt.Errorf("Initializing repositories failed: %w", err))
 	}
-	defer repos.Close()
+	defer repo.Close()
 
 	// Initialize the services.
 	var (
 		diarySvc diary.Service
 	)
 	{
-		diarySvc = service.NewDiary(logger, repos)
+		diarySvc = service.NewDiary(logger, repo)
 	}
 
 	// Wrap the services in endpoints that can be invoked from other services

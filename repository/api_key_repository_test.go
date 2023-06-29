@@ -11,16 +11,16 @@ func TestApiKeyRepositoryCreateByUser(t *testing.T) {
 	email := testutil.RandomEmail()
 	name := testutil.RandomString(10)
 
-	user, _ := repos.User.Create(
+	user, _ := repo.CreateUser(
 		email, name,
 	)
 
-	apiKey1, err := repos.ApiKey.CreateByUser(user)
+	apiKey1, err := repo.CreateApiKeyByUser(user)
 	assert.Nil(t, err)
 	assert.Equal(t, user.UserID, apiKey1.UserID)
 	assert.Equal(t, 64, len(apiKey1.ApiKey))
 
-	apiKey2, err := repos.ApiKey.CreateByUser(user)
+	apiKey2, err := repo.CreateApiKeyByUser(user)
 	assert.Nil(t, err)
 	assert.Equal(t, user.UserID, apiKey2.UserID)
 	assert.Equal(t, 64, len(apiKey2.ApiKey))

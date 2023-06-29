@@ -4,19 +4,10 @@ import (
 	"database/sql"
 
 	"github.com/Songmu/flextime"
-	"github.com/jmoiron/sqlx"
 	"github.com/shibayu36/go-diary-api/model"
 )
 
-type ApiKeyRepository struct {
-	db *sqlx.DB
-}
-
-func NewApiKeyRepository(db *sqlx.DB) *ApiKeyRepository {
-	return &ApiKeyRepository{db: db}
-}
-
-func (r *ApiKeyRepository) CreateByUser(user *model.User) (*model.ApiKey, error) {
+func (r *Repository) CreateApiKeyByUser(user *model.User) (*model.ApiKey, error) {
 	now := flextime.Now()
 
 	key, err := model.GenerateApiKey()
@@ -48,7 +39,7 @@ func (r *ApiKeyRepository) CreateByUser(user *model.User) (*model.ApiKey, error)
 	return apiKey, nil
 }
 
-func (r *ApiKeyRepository) FindByApiKey(apiKey string) (*model.ApiKey, error) {
+func (r *Repository) FindApiKeyByApiKey(apiKey string) (*model.ApiKey, error) {
 	var key model.ApiKey
 	err := r.db.Get(&key, "SELECT * FROM api_keys WHERE api_key = ?", apiKey)
 	if err != nil {
