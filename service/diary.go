@@ -3,11 +3,13 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 
 	diary "github.com/shibayu36/go-diary-api/gen/diary"
 	"github.com/shibayu36/go-diary-api/model"
 	"github.com/shibayu36/go-diary-api/repository"
+	"goa.design/goa/v3/security"
 )
 
 // diary service example implementation.
@@ -20,6 +22,24 @@ type diarysrvc struct {
 // NewDiary returns the diary service implementation.
 func NewDiary(logger *log.Logger, repos *repository.Repositories) diary.Service {
 	return &diarysrvc{logger, repos}
+}
+
+func (s *diarysrvc) APIKeyAuth(ctx context.Context, key string, scheme *security.APIKeyScheme) (context.Context, error) {
+	//
+	// TBD: add authorization logic.
+	//
+	// In case of authorization failure this function should return
+	// one of the generated error structs, e.g.:
+	//
+	//    return ctx, myservice.MakeUnauthorizedError("invalid token")
+	//
+	// Alternatively this function may return an instance of
+	// goa.ServiceError with a Name field value that matches one of
+	// the design error names, e.g:
+	//
+	//    return ctx, goa.PermanentError("unauthorized", "invalid token")
+	//
+	return ctx, fmt.Errorf("not implemented")
 }
 
 // UserSignup implements UserSignup.
@@ -56,4 +76,9 @@ func (s *diarysrvc) Signin(ctx context.Context, p *diary.SigninPayload) (res str
 	}
 
 	return key.ApiKey, nil
+}
+
+func (s *diarysrvc) CreateDiary(ctx context.Context, p *diary.CreateDiaryPayload) (err error) {
+	s.logger.Print("diary.CreateDiary")
+	return
 }
