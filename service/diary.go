@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"errors"
-	"fmt"
 	"log"
 
 	diary "github.com/shibayu36/go-diary-api/gen/diary"
@@ -25,21 +24,21 @@ func NewDiary(logger *log.Logger, repos *repository.Repositories) diary.Service 
 }
 
 func (s *diarysrvc) APIKeyAuth(ctx context.Context, key string, scheme *security.APIKeyScheme) (context.Context, error) {
-	//
-	// TBD: add authorization logic.
-	//
-	// In case of authorization failure this function should return
-	// one of the generated error structs, e.g.:
-	//
-	//    return ctx, myservice.MakeUnauthorizedError("invalid token")
-	//
-	// Alternatively this function may return an instance of
-	// goa.ServiceError with a Name field value that matches one of
-	// the design error names, e.g:
-	//
-	//    return ctx, goa.PermanentError("unauthorized", "invalid token")
-	//
-	return ctx, fmt.Errorf("not implemented")
+	unauthorizedError := diary.MakeUnauthorized(errors.New("invalid token"))
+
+	apiKey, err := s.repos.ApiKey.FindByApiKey(key)
+	if err != nil {
+		return ctx, unauthorizedError
+	}
+
+	user, err := s.repos.User.FindByID(apiKey.UserID)
+	if err != nil {
+		return ctx, unauthorizedError
+	}
+
+	ctx = context.WithValue(ctx, "user", user)
+
+	return ctx, nil
 }
 
 // UserSignup implements UserSignup.
@@ -79,6 +78,8 @@ func (s *diarysrvc) Signin(ctx context.Context, p *diary.SigninPayload) (res str
 }
 
 func (s *diarysrvc) CreateDiary(ctx context.Context, p *diary.CreateDiaryPayload) (err error) {
+	user := ctx.Value("user").(*model.User)
+	s.logger.Print(user)
 	s.logger.Print("diary.CreateDiary")
 	return
 }

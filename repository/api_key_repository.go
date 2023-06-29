@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"database/sql"
+
 	"github.com/Songmu/flextime"
 	"github.com/jmoiron/sqlx"
 	"github.com/shibayu36/go-diary-api/model"
@@ -44,4 +46,16 @@ func (r *ApiKeyRepository) CreateByUser(user *model.User) (*model.ApiKey, error)
 		UpdatedAt: now,
 	}
 	return apiKey, nil
+}
+
+func (r *ApiKeyRepository) FindByApiKey(apiKey string) (*model.ApiKey, error) {
+	var key model.ApiKey
+	err := r.db.Get(&key, "SELECT * FROM api_keys WHERE api_key = ?", apiKey)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, NewNotFoundError("api key")
+		}
+		return nil, err
+	}
+	return &key, nil
 }
